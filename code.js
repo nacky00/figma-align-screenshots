@@ -11,6 +11,14 @@ figma.showUI(__html__);
 figma.ui.onmessage = msg => {
     // One way of distinguishing between different types of messages sent from
     // your HTML page is to use an object with a "type" property like this.
+    if (msg.type === 'change-arrow-style') {
+        if (figma.currentPage.selection.length == 1) {
+            const node = figma.currentPage.selection[0];
+            console.log(msg.radius);
+            console.log(msg.width);
+            console.log(msg.color);
+        }
+    }
     if (msg.type === 'create-rectangles') {
         const nodes = [];
         for (let i = 0; i < msg.count; i++) {
@@ -25,5 +33,5 @@ figma.ui.onmessage = msg => {
     }
     // Make sure to close the plugin when you're done. Otherwise the plugin will
     // keep running, which shows the cancel button at the bottom of the screen.
-    figma.closePlugin();
+    // figma.closePlugin();
 };
