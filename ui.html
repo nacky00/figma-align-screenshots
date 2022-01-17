@@ -1,0 +1,18 @@
+<h2>Rectangle Creator</h2>
+<p>Width: <input id="width" value="3"></p>
+<p>Radius: <input id="radius" value="10"></p>
+<p>Color: <input id="color" value="000"></p>
+<button id="change">Change</button>
+<script>
+
+document.getElementById('change').onclick = () => {
+  const widthBox = document.getElementById('width');
+  const radiusBox = document.getElementById('radius');
+  const colorBox = document.getElementById('color');
+  const width = parseInt(widthBox.value, 10);
+  const radius = parseInt(radiusBox.value, 10);
+  const color = colorBox.value;
+  parent.postMessage({ pluginMessage: { type: 'change-arrow-style', width, radius, color } }, '*')
+}
+
+</script>

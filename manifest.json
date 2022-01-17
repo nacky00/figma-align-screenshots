@@ -1,0 +1,10 @@
+{
+  "name": "Arrow Style Changer",
+  "id": "1065048423820621718",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": [
+    "figma"
+  ],
+  "ui": "ui.html"
+}
