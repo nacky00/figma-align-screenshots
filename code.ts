@@ -8,6 +8,20 @@
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__);
 
+function clone(val: any) {
+  return JSON.parse(JSON.stringify(val))
+}
+
+const hexToRgb = (color = "000") =>
+  Object.fromEntries(
+    ((color.match(/^#?[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/) ? color : "000").replace(
+      /^#?(.*)$/,
+      (_, hex) => (hex.length == 3) ? hex.replace(/./g, "$&$&") : hex,
+    ).match(/../g)).map((c, i) => ["rgb".charAt(i), parseInt("0x" + c)]),
+  );
+
+  const convertedRgb = ({ r=1, g=1, b=1 }) => ( { r: r / 255, g: g / 255, b: b / 255 });
+
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
 // posted message.
@@ -15,11 +29,21 @@ figma.ui.onmessage = msg => {
   // One way of distinguishing between different types of messages sent from
   // your HTML page is to use an object with a "type" property like this.
   if (msg.type === 'change-arrow-style') {
-      if (figma.currentPage.selection.length == 1) {
+      if (figma.currentPage.selection.length == 1 && figma.currentPage.selection[0].type == "VECTOR") {
           const node = figma.currentPage.selection[0];
           console.log(msg.radius);
           console.log(msg.width);
           console.log(msg.color);
+
+          node.cornerRadius = msg.radius;
+
+          console.log(convertedRgb(hexToRgb(msg.color)));
+
+          const clone_strokes = clone(node.strokes);
+          clone_strokes[0].color = convertedRgb(hexToRgb(msg.color));
+          node.strokes = clone_strokes;
+
+          const clone_vector = clone(node.vectorNetwork.vertices);
       }
   }
   if (msg.type === 'create-rectangles') {
@@ -39,3 +63,5 @@ figma.ui.onmessage = msg => {
   // keep running, which shows the cancel button at the bottom of the screen.
   // figma.closePlugin();
 };
+
+
