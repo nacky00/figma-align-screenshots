@@ -8,6 +8,11 @@
 // This shows the HTML page in "ui.html".
 
 figma.showUI(__html__);
+figma.ui.postMessage({
+    "width": figma.root.getPluginData('width'),
+    "radius": figma.root.getPluginData('radius'),
+    "hex": figma.root.getPluginData('hex')
+  });
 
 function clone(val: any) {
   return JSON.parse(JSON.stringify(val))
@@ -18,7 +23,7 @@ const hexToRgb = (color = "000") =>
     ((color.match(/^#?[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/) ? color : "000").replace(
       /^#?(.*)$/,
       (_, hex) => (hex.length == 3) ? hex.replace(/./g, "$&$&") : hex,
-    ).match(/../g)).map((c, i) => ["rgb".charAt(i), parseInt("0x" + c)]),
+    ).match(/../g) ?? []).map((c, i) => ["rgb".charAt(i), parseInt("0x" + c)]),
   );
 
 const convertedRgb = ({ r = 1, g = 1, b = 1 }) => ({ r: r / 255, g: g / 255, b: b / 255 });
@@ -30,17 +35,24 @@ figma.ui.onmessage = msg => {
   // One way of distinguishing between different types of messages sent from
   // your HTML page is to use an object with a "type" property like this.
   if (msg.type === 'change-arrow-style') {
-    for (const node of figma.currentPage.selection as any) {
+    for (const node of figma.currentPage.selection) {
       if (node.type != "VECTOR") return;
       node.cornerRadius = msg.radius;
       node.strokeWeight = msg.width;
+      
       const clone_strokes = clone(node.strokes);
-      clone_strokes[0].color = convertedRgb(hexToRgb(msg.color));
+      const color = convertedRgb(hexToRgb(msg.color));
+      clone_strokes[0].color = color;
+      
       node.strokes = clone_strokes;
       const clone_vector = clone(node.vectorNetwork);
       clone_vector.vertices[0].strokeCap = "ROUND";
       clone_vector.vertices[clone_vector.vertices.length - 1].strokeCap = "ARROW_LINES";
       node.vectorNetwork = clone_vector;
+      
+      figma.root.setPluginData('hex', msg.color);
+      figma.root.setPluginData('width', String(msg.width));
+      figma.root.setPluginData('radius', String(msg.radius));
     };
   }
   if (msg.type === 'create-rectangles') {

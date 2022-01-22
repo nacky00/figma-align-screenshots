@@ -5,10 +5,18 @@
 // full browser environment (see documentation).
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__);
+figma.ui.postMessage({
+    "width": figma.root.getPluginData('width'),
+    "radius": figma.root.getPluginData('radius'),
+    "hex": figma.root.getPluginData('hex')
+});
 function clone(val) {
     return JSON.parse(JSON.stringify(val));
 }
-const hexToRgb = (color = "000") => Object.fromEntries(((color.match(/^#?[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/) ? color : "000").replace(/^#?(.*)$/, (_, hex) => (hex.length == 3) ? hex.replace(/./g, "$&$&") : hex).match(/../g)).map((c, i) => ["rgb".charAt(i), parseInt("0x" + c)]));
+const hexToRgb = (color = "000") => {
+    var _a;
+    return Object.fromEntries(((_a = (color.match(/^#?[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/) ? color : "000").replace(/^#?(.*)$/, (_, hex) => (hex.length == 3) ? hex.replace(/./g, "$&$&") : hex).match(/../g)) !== null && _a !== void 0 ? _a : []).map((c, i) => ["rgb".charAt(i), parseInt("0x" + c)]));
+};
 const convertedRgb = ({ r = 1, g = 1, b = 1 }) => ({ r: r / 255, g: g / 255, b: b / 255 });
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
@@ -23,12 +31,16 @@ figma.ui.onmessage = msg => {
             node.cornerRadius = msg.radius;
             node.strokeWeight = msg.width;
             const clone_strokes = clone(node.strokes);
-            clone_strokes[0].color = convertedRgb(hexToRgb(msg.color));
+            const color = convertedRgb(hexToRgb(msg.color));
+            clone_strokes[0].color = color;
             node.strokes = clone_strokes;
             const clone_vector = clone(node.vectorNetwork);
             clone_vector.vertices[0].strokeCap = "ROUND";
             clone_vector.vertices[clone_vector.vertices.length - 1].strokeCap = "ARROW_LINES";
             node.vectorNetwork = clone_vector;
+            figma.root.setPluginData('hex', msg.color);
+            figma.root.setPluginData('width', String(msg.width));
+            figma.root.setPluginData('radius', String(msg.radius));
         }
         ;
     }
