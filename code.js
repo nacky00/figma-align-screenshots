@@ -17,18 +17,20 @@ figma.ui.onmessage = msg => {
     // One way of distinguishing between different types of messages sent from
     // your HTML page is to use an object with a "type" property like this.
     if (msg.type === 'change-arrow-style') {
-        if (figma.currentPage.selection.length == 1 && figma.currentPage.selection[0].type == "VECTOR") {
-            const node = figma.currentPage.selection[0];
-            console.log(msg.radius);
-            console.log(msg.width);
-            console.log(msg.color);
+        for (const node of figma.currentPage.selection) {
+            if (node.type != "VECTOR")
+                return;
             node.cornerRadius = msg.radius;
-            console.log(convertedRgb(hexToRgb(msg.color)));
+            node.strokeWeight = msg.width;
             const clone_strokes = clone(node.strokes);
             clone_strokes[0].color = convertedRgb(hexToRgb(msg.color));
             node.strokes = clone_strokes;
-            const clone_vector = clone(node.vectorNetwork.vertices);
+            const clone_vector = clone(node.vectorNetwork);
+            clone_vector.vertices[0].strokeCap = "ROUND";
+            clone_vector.vertices[clone_vector.vertices.length - 1].strokeCap = "ARROW_LINES";
+            node.vectorNetwork = clone_vector;
         }
+        ;
     }
     if (msg.type === 'create-rectangles') {
         const nodes = [];
