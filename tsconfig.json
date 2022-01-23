@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "lib": [
-      "dom",
+      "dom", "es6", "es2019"
     ],
     "typeRoots": [
       "./node_modules/@types",
