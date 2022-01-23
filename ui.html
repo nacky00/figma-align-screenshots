@@ -1,24 +1,34 @@
-<h2>Rectangle Creator</h2>
-<p>Width: <input id="width" value=""></p>
-<p>Radius: <input id="radius" value=""></p>
-<p>Color: <input id="color" value=""></p>
-<button id="change">Change</button>
+<link rel="stylesheet" href="https://static.figma.com/api/figma-extension-api-0.0.1.css">
+<h4>test</h4>
+<p>Width: <input id="width" value="" type="text" placeholder="5"></p>
+<p>Radius: <input id="radius" value="" type="text" placeholder="12"></p>
+<p>Color: <input id="color" value="" type="text" placeholder="000000"></p>
+<button id="change" class="primary">Change</button>
 <script>
-  let preValue = (preData) => preData ? preData : { "width": "5", "radius": "12", "hex": "000000" }
+  const widthInit = 5;
+  const radiusInit = 12;
+  const hexInit = '000000';
+
+  const widthElement = document.getElementById('width');
+  const radiusElement = document.getElementById('radius');
+  const colorElement = document.getElementById('color');
+
+  let preValue = (preData) => preData ? preData : { "width": widthInit, "radius": radiusInit, "hex": hexInit }
 
   onmessage = (event) => {
-    document.getElementById('width').value = preValue(event.data.pluginMessage).width;
-    document.getElementById('radius').value = preValue(event.data.pluginMessage).radius;
-    document.getElementById('color').value = preValue(event.data.pluginMessage).hex;
+    widthElement.value = preValue(event.data.pluginMessage).width;
+    radiusElement.value = preValue(event.data.pluginMessage).radius;
+    colorElement.value = preValue(event.data.pluginMessage).hex;
   }
 
+  widthElement.onchange = () => { widthElement.value = widthElement.value == "" ? widthElement.value = widthInit : widthElement.value; }
+  radiusElement.onchange = () => { radiusElement.value = radiusElement.value == "" ? radiusElement.value = radiusInit : radiusElement.value; }
+  colorElement.onchange = () => { colorElement.value = colorElement.value == "" ? colorElement.value = colorInit : colorElement.value; }
+
   document.getElementById('change').onclick = () => {
-    const widthBox = document.getElementById('width');
-    const radiusBox = document.getElementById('radius');
-    const colorBox = document.getElementById('color');
-    const width = parseInt(widthBox.value, 10);
-    const radius = parseInt(radiusBox.value, 10);
-    const color = colorBox.value;
+    const width = parseInt(widthElement.value, 10);
+    const radius = parseInt(radiusElement.value, 10);
+    const color = colorElement.value;
     parent.postMessage({ pluginMessage: { type: 'change-arrow-style', width, radius, color } }, '*')
   }
 
