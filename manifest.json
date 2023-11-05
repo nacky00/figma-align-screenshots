@@ -6,5 +6,6 @@
   "editorType": [
     "figma"
   ],
-  "ui": "dist/ui.html"
+  "ui": "dist/ui.html",
+  "networkAccess": { "allowedDomains": ["none"] }
 }
