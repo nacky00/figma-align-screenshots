@@ -1,16 +1,17 @@
 {
-  "name": "Arrow-Style-Changer",
+  "name": "Align-Screenshots",
   "version": "1.0.0",
   "description": "Your Figma plugin",
   "main": "code.js",
   "scripts": {
     "dev": "npx webpack --mode=development --watch",
-    "build": "npx webpack --mode=production"
+    "build": "npx webpack --mode=production",
+    "watch": "npx webpack --mode=development --watch"
   },
   "author": "",
   "license": "",
   "devDependencies": {
-    "@figma/plugin-typings": "^1.41.1",
+    "@figma/plugin-typings": "^1.78.0",
     "css-loader": "^6.5.1",
     "html-webpack-inline-source-plugin": "^1.0.0-beta.2",
     "html-webpack-plugin": "^5.5.0",
